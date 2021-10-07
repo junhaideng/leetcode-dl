@@ -1,8 +1,21 @@
+// Package log 简单的包装一下标准 log
 package log
 
-import "log"
+import (
+	"io"
+	"log"
+	"os"
+)
 
-// 简单的包装一下log
+func SetOutput(filename string) {
+	f, err := os.Create(filename)
+	if err != nil {
+		log.Println("Create log file failed, use console as output")
+		return
+	}
+	log.SetOutput(io.MultiWriter(f, os.Stdout))
+}
+
 func Infof(format string, v ...interface{}) {
 	log.SetPrefix("\033[0;36m")
 	log.Printf(format, v...)
@@ -26,4 +39,3 @@ func Successf(format string, v ...interface{}) {
 	log.Printf(format, v...)
 	log.SetPrefix("\033[00m")
 }
-

@@ -28,6 +28,12 @@ Usage:
         directory to store all problems (default "leetcode")
   -lang string
         description language, support [zh, en] (default "zh")
+  -r int
+        get question detail retry times (default 5)
+  -s uint
+        sleep time to avoid http code 429 (default 5)
   -t string
-        which program language to solve, [C, C++, Python, Python3, Java, etc] (default "Go")
+        which program language to solve, [C, C++, Python, Python3, Java, etc] (default "Go")    
+  -w string
+        write log to file
 ```
