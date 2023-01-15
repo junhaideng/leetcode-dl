@@ -21,6 +21,7 @@ var lang string
 var maxRetry int
 var sleep uint
 var write string // 日志是否写入文件中
+var inc bool
 
 func init() {
 	rand.Seed(time.Now().Unix())
@@ -30,6 +31,7 @@ func init() {
 	flag.IntVar(&maxRetry, "r", 5, "get question detail retry times")
 	flag.UintVar(&sleep, "s", 5, "sleep time to avoid http code 429")
 	flag.StringVar(&write, "w", "", "write log to file")
+	flag.BoolVar(&inc, "a", false, "if question exists, not download again")
 }
 
 func main() {
@@ -43,7 +45,7 @@ func main() {
 		log.Errorf("获取题目列表失败: %s\n", err)
 		return
 	}
-	err = os.Mkdir(dir, 0666)
+	err = os.Mkdir(dir, 0777)
 	if err != nil {
 		if !os.IsExist(err) {
 			log.Errorf("创建文件夹[%s]失败: %s", dir, err)
@@ -56,6 +58,15 @@ func main() {
 		if pair.PaidOnly {
 			log.Warn("问题需要付费，跳过")
 			continue
+		}
+
+		problemDir := filepath.Join(dir, pair.Stat.FrontendQuestionID)
+		if inc {
+			_, err := os.Stat(problemDir)
+			if err == nil || os.IsExist(err) {
+				log.Successf("题目文件夹已存在，跳过\n", pair.Stat.QuestionTitle, filepath.Join(problemDir))
+				continue
+			}
 		}
 
 		// 获取到每一个题目的具体信息
@@ -80,8 +91,7 @@ func main() {
 		}
 
 		//  -----------开始写入文件-----------------------
-		problemDir := filepath.Join(dir, pair.Stat.FrontendQuestionID)
-		err = os.Mkdir(problemDir, 0666)
+		err = os.MkdirAll(problemDir, 0777)
 		if err != nil {
 			if !os.IsExist(err) {
 				log.Errorf("创建文件夹[%s]失败: %s", dir, err)

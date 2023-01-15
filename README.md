@@ -36,4 +36,6 @@ Usage:
         which program language to solve, [C, C++, Python, Python3, Java, etc] (default "Go")    
   -w string
         write log to file
+  -a or not set
+        if question directory exists, not download again
 ```
